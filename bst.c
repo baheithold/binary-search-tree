@@ -128,6 +128,12 @@ void setBSTNODEparent(BSTNODE *n, BSTNODE *replacement) {
 }
 
 
+/*
+ *  Method: freeBSTNODE
+ *  Usage:  freeBSTNODE(n, freeINTEGER);
+ *  Description: If the freeing function is not NULL, then the method should
+ *  free its generic value before freeing the node itself.
+ */
 void freeBSTNODE(BSTNODE *n, void (*free)(void *)) {
     // TODO: Do I work correctly?
     assert(n != 0); // TODO: Should I assert here?
