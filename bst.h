@@ -16,11 +16,11 @@ extern BSTNODE *newBSTNODE(void *v);
 extern void *getBSTNODEvalue(BSTNODE *n);
 extern void setBSTNODEvalue(BSTNODE *n, void *value);
 extern BSTNODE *getBSTNODEleft(BSTNODE *n);
-extern BSTNODE *setBSTNODEleft(BSTNODE *n, BSTNODE *replacement);
+extern void setBSTNODEleft(BSTNODE *n, BSTNODE *replacement);
 extern BSTNODE *getBSTNODEright(BSTNODE *n);
-extern BSTNODE *setBSTNODEright(BSTNODE *n, BSTNODE *replacement);
+extern void setBSTNODEright(BSTNODE *n, BSTNODE *replacement);
 extern BSTNODE *getBSTNODEparent(BSTNODE *n);
-extern BSTNODE *setBSTNODEparent(BSTNODE *n, BSTNODE *replacement);
+extern void setBSTNODEparent(BSTNODE *n, BSTNODE *replacement);
 extern void freeBSTNODE(BSTNODE *n, void (*free)(void *));
 
 typedef struct BST BST;
@@ -32,7 +32,7 @@ extern BST *newBST(
     void (*)(void *));
 extern BSTNODE *getBSTroot(BST *t);
 extern void setBSTroot(BST *t, BSTNODE *replacement);
-extern void setBSTroot(BST *t, int s);
+extern void setBSTsize(BST *t, int s);
 extern BSTNODE *insertBST(BST *t, void *value);
 extern BSTNODE *findBST(BST *t, void *value);
 extern BSTNODE *deleteBST(BST *t, void *value);

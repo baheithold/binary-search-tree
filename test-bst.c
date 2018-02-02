@@ -9,5 +9,8 @@
 
 int main(void) {
 
+    BSTNODE *n = newBSTNODE(newINTEGER(17));
+
+    freeBSTNODE(n, freeINTEGER);
     return 0;
 }

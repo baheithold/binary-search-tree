@@ -13,7 +13,7 @@ integer.o : integer.c integer.h
 bst.o : bst.c bst.h
 		gcc $(OOPTS) bst.c
 
-test-bst.o :	test-bst.c test-bst.h
+test-bst.o :	test-bst.c bst.h
 		gcc $(OOPTS) test-bst.c
 
 test : test-bst
