@@ -160,17 +160,89 @@ struct BST {
 };
 
 
+/*
+ *  Constructor: newBST
+ *  Usage:  BST *t = newBST(displayINT, compareINT, swapINT, freeINT);
+ *  Description: This is the constructor used to instantiate a new
+ *  BST object.
+ */
 BST *newBST(void (*d)(void *, FILE *),
             int (*c)(void *, void *),
             void (*s)(BSTNODE *, BSTNODE *),
             void (*f)(void *)) {
-    BST *b = malloc(sizeof(BST));
-    b->root = NULL;
-    b->size = 0;
-    b->display = d;
-    b->comparator = c;
-    b->swapper = s;
-    b->free = f;
+    // TODO: Fix swapper handling
+    BST *t = malloc(sizeof(BST));
+    t->root = NULL;
+    t->size = 0;
+    t->display = d;
+    t->comparator = c;
+    t->swapper = s;
+    t->free = f;
+    return t;
+}
+
+
+/*
+ *  Method: getBSTroot
+ *  Usage:  BSTNODE *root = getBSTroot(t);
+ *  Description: This method returns the root NODE of a tree.
+ */
+BSTNODE *getBSTroot(BST *t) {
+    assert(t != NULL);
+    return t->root;
+}
+
+
+/*
+ *  Method: setBSTroot
+ *  Usage:  setBSTroot(t, replacement);
+ *  Description: This method updates the root pointer of a BST object. This 
+ *  method runs in constant time.
+ */
+void setBSTroot(BST *t, BSTNODE *replacement) {
+    assert(t != 0);
+    t->root = replacement;
+}
+
+
+/*
+ *  Method: setBSTsize
+ *  Usage:  setBSTsize(t, size);
+ *  Description: This method sets the size of a BST object.
+ */
+void setBSTsize(BST *t, int s) {
+    assert(t != 0);
+    t->size = s;
+}
+
+
+/*
+ *  Method: sizeBST
+ *  Usage:  int s = sizeBST(t);
+ *  Description: This method returns the number of nodes in a BST object.
+ */
+int sizeBST(BST *t) {
+    assert(t != 0);
+    return t->size;
+}
+
+
+/*
+ *  Method: statisticesBST
+ *  Usage:  statisticsBST(t, stdout);
+ *  Description: This method displays the number of nodes in the tree as well
+ *  as the minimum and maximum heights of the tree. This method runs in
+ *  linear time.
+ *  Example Output:
+ *                  Nodes: 8
+ *                  Minimum depth: 2
+ *                  Maximum depth: 4
+ */
+void statisticsBST(BST *t, FILE *fp) {
+    assert(t != 0);
+    fprintf(fp, "Nodes: %d\n", t->size);
+    fprintf(fp, "Minimum depth: IMPLEMENT ME!\n");
+    fprintf(fp, "Maximum depth: IMPLEMENT ME!\n");
 }
 
 

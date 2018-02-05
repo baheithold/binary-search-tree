@@ -9,5 +9,7 @@
 
 int main(void) {
 
+    BST *t = newBST(displayINTEGER, compareINTEGER, NULL, freeINTEGER);
+
     return 0;
 }
