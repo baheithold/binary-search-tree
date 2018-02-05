@@ -160,4 +160,18 @@ struct BST {
 };
 
 
+BST *newBST(void (*d)(void *, FILE *),
+            int (*c)(void *, void *),
+            void (*s)(BSTNODE *, BSTNODE *),
+            void (*f)(void *)) {
+    BST *b = malloc(sizeof(BST));
+    b->root = NULL;
+    b->size = 0;
+    b->display = d;
+    b->comparator = c;
+    b->swapper = s;
+    b->free = f;
+}
+
+
 /****************************** Private Methods ******************************/
