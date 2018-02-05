@@ -144,4 +144,20 @@ void freeBSTNODE(BSTNODE *n, void (*free)(void *)) {
 }
 
 
+/*
+ *  Type:   BST
+ *  Description: This is the struct definition for the BST class.
+ */
+struct BST {
+    BSTNODE *root;
+    int size;
+    
+    // Public Methods
+    void (*display)(void *, FILE *);
+    int (*comparator)(void *, void *);
+    void (*swapper)(BSTNODE *, BSTNODE *);
+    void (*free)(void *);
+};
+
+
 /****************************** Private Methods ******************************/
