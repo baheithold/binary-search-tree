@@ -172,6 +172,7 @@ BST *newBST(void (*d)(void *, FILE *),
             void (*f)(void *)) {
     // TODO: Fix swapper handling
     BST *t = malloc(sizeof(BST));
+    assert(t != 0);
     t->root = NULL;
     t->size = 0;
     t->display = d;
