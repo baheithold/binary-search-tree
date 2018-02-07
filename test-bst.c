@@ -19,7 +19,7 @@ int main(void) {
     root = insertBST(t, newINTEGER(12));
     root = insertBST(t, newINTEGER(8));
 
-    statisticsBST(t, stdout);
+    displayBSTdebug(t, stdout);
 
     freeBST(t);
     return 0;

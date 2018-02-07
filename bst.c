@@ -149,6 +149,7 @@ void freeBSTNODE(BSTNODE *n, void (*freeValue)(void *)) {
 static int getMinDepth(BST *t);
 static int getMaxDepth(BST *t, BSTNODE *n);
 static void displayPreorder(BST *t, BSTNODE *n, FILE *fp);
+static void displayLevelOrder(BST *t, FILE *fp);
 static void freeTree(BST *t, BSTNODE *n);
 
 
@@ -170,6 +171,7 @@ struct BST {
     int (*getMinDepth)(BST *);
     int (*getMaxDepth)(BST *, BSTNODE *);
     void (*displayPreorder)(BST *, BSTNODE *, FILE *);
+    void (*displayLevelOrder)(BST *, FILE *);
     void (*freeTree)(BST *, BSTNODE *);
 };
 
@@ -196,6 +198,7 @@ BST *newBST(void (*d)(void *, FILE *),
     t->getMinDepth = getMinDepth;
     t->getMaxDepth = getMaxDepth;
     t->displayPreorder = displayPreorder;
+    t->displayLevelOrder = displayLevelOrder;
     t->freeTree = freeTree;
     return t;
 }
@@ -353,7 +356,7 @@ void displayBST(BST *t, FILE *fp) {
  */
 void displayBSTdebug(BST *t, FILE *fp) {
     // FIXME
-    fprintf(fp, "IMPLEMENT ME!");
+    t->displayLevelOrder(t, fp);
 }
 
 
@@ -425,6 +428,22 @@ void displayPreorder(BST *t, BSTNODE *n, FILE *fp) {
     if (n->right != NULL) fprintf(fp, " [");
     t->displayPreorder(t, n->right, fp);
     if (n->right != NULL) fprintf(fp, "]");
+}
+
+
+void displayLevelOrder(BST *t, FILE *fp) {
+    assert(t != 0);
+    if (t->root == NULL) return;
+    QUEUE *q = newQUEUE(NULL, NULL);
+    BSTNODE *n;
+    enqueue(q, t->root);
+    while (sizeQUEUE(q) != 0) {
+        n = dequeue(q);
+        if (n->left != NULL) enqueue(q, n->left);
+        if (n->right != NULL) enqueue(q, n->right);
+        t->display(getBSTNODEvalue(n), fp);
+        fprintf(fp, " ");
+    }
 }
 
 
