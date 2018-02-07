@@ -15,11 +15,14 @@ int main(void) {
     BSTNODE *right = insertBST(t, newINTEGER(9));
 
     printf("Finding a node...\n");
-    BSTNODE *n = findBST(t, newINTEGER(9));
+    INTEGER *x = newINTEGER(9);
+    BSTNODE *n = findBST(t, x);
     if (n != NULL) {
         printf("The value of the node is %d\n", getINTEGER(getBSTNODEvalue(n)));
     }
     else printf("The value was not found!\n");
 
+    freeINTEGER(x);
+    freeBST(t);
     return 0;
 }

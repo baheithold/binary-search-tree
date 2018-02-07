@@ -144,6 +144,10 @@ void freeBSTNODE(BSTNODE *n, void (*free)(void *)) {
 }
 
 
+// BST private method prototypes
+static void freeTree(BST *t, BSTNODE *n);
+
+
 /*
  *  Type:   BST
  *  Description: This is the struct definition for the BST class.
@@ -157,6 +161,9 @@ struct BST {
     int (*compare)(void *, void *);
     void (*swap)(BSTNODE *, BSTNODE *);
     void (*free)(void *);
+
+    // Private Methods
+    void (*freeTree)(BST *, BSTNODE *);
 };
 
 
@@ -179,6 +186,7 @@ BST *newBST(void (*d)(void *, FILE *),
     t->compare = c;
     t->swap = s;
     t->free = f;
+    t->freeTree = freeTree;
     return t;
 }
 
@@ -312,4 +320,17 @@ void statisticsBST(BST *t, FILE *fp) {
 }
 
 
+void freeBST(BST *t) {
+    t->freeTree(t, t->root);
+    free(t);
+}
+
+
 /****************************** Private Methods ******************************/
+
+void freeTree(BST *t, BSTNODE *n) {
+    if (n == NULL) return;
+    t->freeTree(t, n->left);
+    t->freeTree(t, n->right);
+    freeBSTNODE(n, t->free);
+}
