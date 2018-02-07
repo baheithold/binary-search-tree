@@ -222,7 +222,9 @@ void setBSTsize(BST *t, int s) {
  *  Description:
  */
 BSTNODE *insertBST(BST *t, void *value) {
+    assert(t != 0);
     BSTNODE *n = newBSTNODE(value);
+    assert(n != 0);
     BSTNODE *p = NULL;
     BSTNODE *x = t->root;
     while (x != NULL) {
