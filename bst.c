@@ -220,7 +220,7 @@ void setBSTsize(BST *t, int s) {
 /*
  *  Method: insertBST
  *  Usage:  BSTNODE *n = insertBST(tree, value);
- *  Description:
+ *  Description: This method inserts a new value into a tree.
  */
 BSTNODE *insertBST(BST *t, void *value) {
     assert(t != 0);
@@ -231,11 +231,11 @@ BSTNODE *insertBST(BST *t, void *value) {
     while (x != NULL) {
         p = x;
         if (t->compare(value, getBSTNODEvalue(x)) < 0) {
-            // Traverse left
+            // Traverse Left
             x = getBSTNODEleft(x);
         }
         else {
-            // Traverse right
+            // Traverse Right
             x = getBSTNODEright(x);
         }
     }
@@ -250,6 +250,30 @@ BSTNODE *insertBST(BST *t, void *value) {
     else {
         // Set the new node to be the right child of p
         setBSTNODEright(p, n);
+    }
+    return n;
+}
+
+
+/*
+ *  Method: findBST
+ *  Usage:  BSTNODE *n = findBST(tree, 7);
+ *  Description: This method returns the node that holds the searched-for value.
+ *  If the value is not in the tree, the method returns null. This method
+ *  runs in logarithmic time.
+ */
+BSTNODE *findBST(BST *t, void *value) {
+    assert(t != 0);
+    BSTNODE *n = t->root;
+    while (n != NULL && t->compare(value, getBSTNODEvalue(n)) != 0) {
+        if (t->compare(value, getBSTNODEvalue(n)) < 0) {
+            // Traverse Left
+            n = getBSTNODEleft(n);
+        }
+        else {
+            // Traverse Right
+            n = getBSTNODEright(n);
+        }
     }
     return n;
 }
