@@ -154,8 +154,8 @@ struct BST {
     
     // Public Methods
     void (*display)(void *, FILE *);
-    int (*comparator)(void *, void *);
-    void (*swapper)(BSTNODE *, BSTNODE *);
+    int (*compare)(void *, void *);
+    void (*swap)(BSTNODE *, BSTNODE *);
     void (*free)(void *);
 };
 
@@ -175,8 +175,8 @@ BST *newBST(void (*d)(void *, FILE *),
     t->root = NULL;
     t->size = 0;
     t->display = d;
-    t->comparator = c;
-    t->swapper = s;
+    t->compare = c;
+    t->swap = s;
     t->free = f;
     return t;
 }
@@ -217,6 +217,42 @@ void setBSTsize(BST *t, int s) {
 
 
 /*
+ *  Method: insertBST
+ *  Usage:  BSTNODE *n = insertBST(tree, value);
+ *  Description:
+ */
+BSTNODE *insertBST(BST *t, void *value) {
+    BSTNODE *n = newBSTNODE(value);
+    BSTNODE *p = NULL;
+    BSTNODE *x = t->root;
+    while (x != NULL) {
+        p = x;
+        if (t->compare(value, getBSTNODEvalue(x)) < 0) {
+            // Traverse left
+            x = getBSTNODEleft(x);
+        }
+        else {
+            // Traverse right
+            x = getBSTNODEright(x);
+        }
+    }
+    setBSTNODEparent(n, p);
+    if (p == NULL) {
+        setBSTroot(t, n);
+    }
+    else if (t->compare(value, getBSTNODEvalue(p)) < 0) {
+        // Set the new node to be the left child of p
+        setBSTNODEleft(p, n);
+    }
+    else {
+        // Set the new node to be the right child of p
+        setBSTNODEright(p, n);
+    }
+    return n;
+}
+
+
+/*
  *  Method: sizeBST
  *  Usage:  int s = sizeBST(t);
  *  Description: This method returns the number of nodes in a BST object.
@@ -231,8 +267,11 @@ int sizeBST(BST *t) {
  *  Method: statisticesBST
  *  Usage:  statisticsBST(t, stdout);
  *  Description: This method displays the number of nodes in the tree as well
- *  as the minimum and maximum heights of the tree. This method runs in
- *  linear time.
+ *  as the minimum and maximum heights of the tree. The minimum depth of a tree
+ *  is the minimum number of steps from the root to a node with a NULL child. 
+ *  The maximum depth of a tree is the maximum number of steps from the root 
+ *  to a node with a NULL child. The depths of an empty tree are -1. 
+ *  This method runs in linear time.
  *  Example Output:
  *                  Nodes: 8
  *                  Minimum depth: 2
