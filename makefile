@@ -1,6 +1,6 @@
-OBJS = integer.o bst.o test-bst.o
-OOPTS = -Wall -Wextra -g -c
-LOPTS = -Wall -Wextra -g
+OBJS = integer.o bst.o queue.o sll.o test-bst.o
+OOPTS = -Wall -Wextra -std=c99 -g -c
+LOPTS = -Wall -Wextra -std=c99 -g
 
 all: test-bst
 
@@ -10,14 +10,20 @@ test-bst:	$(OBJS)
 integer.o:	integer.c integer.h
 		gcc $(OOPTS) integer.c
 
-bst.o:	bst.c bst.h
+queue.o:	queue.c queue.h sll.h
+		gcc $(OOPTS) queue.c
+
+sll.o:	sll.c sll.h
+		gcc $(OOPTS) sll.c
+
+bst.o:	bst.c bst.h queue.h
 		gcc $(OOPTS) bst.c
 
-test-bst.o:	test-bst.c bst.h
+test-bst.o:	test-bst.c bst.h queue.h
 		gcc $(OOPTS) test-bst.c
 
 test:	test-bst
-		./test-bst
+		@./test-bst
 
 valgrind: test-bst
 		valgrind test-bst

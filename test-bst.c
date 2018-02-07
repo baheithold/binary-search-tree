@@ -11,18 +11,16 @@ int main(void) {
 
     BST *t = newBST(displayINTEGER, compareINTEGER, NULL, freeINTEGER);
     BSTNODE *root = insertBST(t, newINTEGER(7));
-    BSTNODE *left = insertBST(t, newINTEGER(5));
-    BSTNODE *right = insertBST(t, newINTEGER(9));
+    root = insertBST(t, newINTEGER(4));
+    root = insertBST(t, newINTEGER(10));
+    root = insertBST(t, newINTEGER(2));
+    root = insertBST(t, newINTEGER(5));
+    root = insertBST(t, newINTEGER(9));
+    root = insertBST(t, newINTEGER(12));
+    root = insertBST(t, newINTEGER(8));
 
-    printf("Finding a node...\n");
-    INTEGER *x = newINTEGER(9);
-    BSTNODE *n = findBST(t, x);
-    if (n != NULL) {
-        printf("The value of the node is %d\n", getINTEGER(getBSTNODEvalue(n)));
-    }
-    else printf("The value was not found!\n");
+    statisticsBST(t, stdout);
 
-    freeINTEGER(x);
     freeBST(t);
     return 0;
 }

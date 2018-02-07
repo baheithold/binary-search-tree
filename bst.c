@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "bst.h"
+#include "queue.h"
 
 
 /*
@@ -134,17 +135,20 @@ void setBSTNODEparent(BSTNODE *n, BSTNODE *replacement) {
  *  Description: If the freeing function is not NULL, then the method should
  *  free its generic value before freeing the node itself.
  */
-void freeBSTNODE(BSTNODE *n, void (*free)(void *)) {
+void freeBSTNODE(BSTNODE *n, void (*freeValue)(void *)) {
     // TODO: Do I work correctly?
     assert(n != 0); // TODO: Should I assert here?
-    if (free != NULL) {
-        free(n->value);
+    if (freeValue != NULL) {
+        freeValue(n->value);
     }
     free(n);
 }
 
 
 // BST private method prototypes
+static int getMinDepth(BST *t);
+static int getMaxDepth(BST *t, BSTNODE *n);
+static void displayPreorder(BST *t, BSTNODE *n, FILE *fp);
 static void freeTree(BST *t, BSTNODE *n);
 
 
@@ -163,6 +167,9 @@ struct BST {
     void (*free)(void *);
 
     // Private Methods
+    int (*getMinDepth)(BST *);
+    int (*getMaxDepth)(BST *, BSTNODE *);
+    void (*displayPreorder)(BST *, BSTNODE *, FILE *);
     void (*freeTree)(BST *, BSTNODE *);
 };
 
@@ -186,6 +193,9 @@ BST *newBST(void (*d)(void *, FILE *),
     t->compare = c;
     t->swap = s;
     t->free = f;
+    t->getMinDepth = getMinDepth;
+    t->getMaxDepth = getMaxDepth;
+    t->displayPreorder = displayPreorder;
     t->freeTree = freeTree;
     return t;
 }
@@ -259,6 +269,7 @@ BSTNODE *insertBST(BST *t, void *value) {
         // Set the new node to be the right child of p
         setBSTNODEright(p, n);
     }
+    t->size++;
     return n;
 }
 
@@ -315,11 +326,45 @@ int sizeBST(BST *t) {
 void statisticsBST(BST *t, FILE *fp) {
     assert(t != 0);
     fprintf(fp, "Nodes: %d\n", t->size);
-    fprintf(fp, "Minimum depth: IMPLEMENT ME!\n");
-    fprintf(fp, "Maximum depth: IMPLEMENT ME!\n");
+    fprintf(fp, "Minimum depth: %d\n", t->getMinDepth(t));
+    fprintf(fp, "Maximum depth: %d\n", t->getMaxDepth(t, t->root));
 }
 
 
+/*
+ *  Method: displayBST
+ *  Usage:  displayBST(t, stdout);
+ *  Description:
+ *  Example Output:
+ */
+void displayBST(BST *t, FILE *fp) {
+    // FIXME
+    fprintf(fp, "[");
+    t->displayPreorder(t, t->root, fp);
+    fprintf(fp, "]");
+}
+
+
+/*
+ *  Method: displayBSTdebug
+ *  Usage:  displayBSTdebug(t, stdout);
+ *  Description:
+ *  Example Output:
+ */
+void displayBSTdebug(BST *t, FILE *fp) {
+    // FIXME
+    fprintf(fp, "IMPLEMENT ME!");
+}
+
+
+/*
+ *  Method: freeBST
+ *  Usage:  freeBST(tree);
+ *  Description: This method frees a BST object by performing a postorder
+ *  traversal of the tree freeing the BSTNODE objects. After freeing all of the
+ *  BSTNODEs, the tree object itself is freed. This method makes use of a 
+ *  recursive helper function.
+ */
 void freeBST(BST *t) {
     t->freeTree(t, t->root);
     free(t);
@@ -327,6 +372,61 @@ void freeBST(BST *t) {
 
 
 /****************************** Private Methods ******************************/
+
+int getMinDepth(BST *t) {
+    // TODO: Do I work Correctly?
+    // TODO: Am I efficient?
+    assert(t != 0);
+    int depth = 0;
+    int numDequeues = 0;
+    if (t->root == NULL) return -1;
+    QUEUE *q = newQUEUE(NULL, NULL);
+    BSTNODE *n = t->root;
+    enqueue(q, n);
+    while (sizeQUEUE(q) != 0) {
+        n = dequeue(q);
+        numDequeues++;
+        if (n->left != NULL && n->right != NULL) {
+            enqueue(q, n->left);
+            enqueue(q, n->right);
+        }
+        else {
+            while (sizeQUEUE(q) != 0) {
+                n = dequeue(q);
+            }
+            break;
+        }
+        if (numDequeues % 2 != 0) depth++;
+    }
+    freeQUEUE(q);
+    return depth;
+}
+
+
+int getMaxDepth(BST *t, BSTNODE *n) {
+    // TODO: Do I work Correctly?
+    // TODO: Am I efficient?
+    assert(t != 0);
+    if (n == NULL) return 0;
+    int leftDepth = t->getMaxDepth(t, n->left);
+    int rightDepth = t->getMaxDepth(t, n->right);
+    if (leftDepth > rightDepth) return leftDepth + 1;
+    else return rightDepth + 1;
+}
+
+
+void displayPreorder(BST *t, BSTNODE *n, FILE *fp) {
+    assert(t != 0);
+    if (n == NULL) return;
+    t->display(getBSTNODEvalue(n), fp);
+    if (n->left != NULL) fprintf(fp, "[");
+    t->displayPreorder(t, n->left, fp);
+    if (n->left != NULL) fprintf(fp, "]");
+    if (n->right != NULL) fprintf(fp, " [");
+    t->displayPreorder(t, n->right, fp);
+    if (n->right != NULL) fprintf(fp, "]");
+}
+
 
 void freeTree(BST *t, BSTNODE *n) {
     if (n == NULL) return;
