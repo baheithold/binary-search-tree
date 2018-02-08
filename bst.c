@@ -377,6 +377,7 @@ void displayBSTdebug(BST *t, FILE *fp) {
         }
         fprintf(fp, "\n");
     }
+    freeQUEUE(q);
 }
 
 
