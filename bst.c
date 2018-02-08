@@ -149,7 +149,6 @@ void freeBSTNODE(BSTNODE *n, void (*freeValue)(void *)) {
 static int getMinDepth(BST *t);
 static int getMaxDepth(BST *t, BSTNODE *n);
 static void displayPreorder(BST *t, BSTNODE *n, FILE *fp);
-static void displayLevelOrder(BST *t, FILE *fp);
 static void freeTree(BST *t, BSTNODE *n);
 
 
@@ -171,7 +170,6 @@ struct BST {
     int (*getMinDepth)(BST *);
     int (*getMaxDepth)(BST *, BSTNODE *);
     void (*displayPreorder)(BST *, BSTNODE *, FILE *);
-    void (*displayLevelOrder)(BST *, FILE *);
     void (*freeTree)(BST *, BSTNODE *);
 };
 
@@ -198,7 +196,6 @@ BST *newBST(void (*d)(void *, FILE *),
     t->getMinDepth = getMinDepth;
     t->getMaxDepth = getMaxDepth;
     t->displayPreorder = displayPreorder;
-    t->displayLevelOrder = displayLevelOrder;
     t->freeTree = freeTree;
     return t;
 }
@@ -351,12 +348,35 @@ void displayBST(BST *t, FILE *fp) {
 /*
  *  Method: displayBSTdebug
  *  Usage:  displayBSTdebug(t, stdout);
- *  Description:
+ *  Description: This method displays a level-order traversal of a binary tree
+ *  object. Each level is displayed on a new line with spaces separating
+ *  each node. This method runs in linear time.
  *  Example Output:
+ *                  7
+ *                  4 10
+ *                  2 5 9 12
+ *                  8
  */
 void displayBSTdebug(BST *t, FILE *fp) {
-    // FIXME
-    t->displayLevelOrder(t, fp);
+    assert(t != 0);
+    if (t->root == NULL) return;
+    QUEUE *q = newQUEUE(NULL, NULL);
+    BSTNODE *n = t->root;
+    enqueue(q, n);
+    int nodesAtLevel = 0;
+    while (1) {
+        nodesAtLevel = sizeQUEUE(q);
+        if (nodesAtLevel == 0) break;
+        while (nodesAtLevel > 0) {
+            n = dequeue(q);
+            t->display(getBSTNODEvalue(n), fp);
+            if (nodesAtLevel > 1) fprintf(fp, " ");
+            if (n->left != NULL) enqueue(q, n->left);
+            if (n->right != NULL) enqueue(q, n->right);
+            nodesAtLevel--;
+        }
+        fprintf(fp, "\n");
+    }
 }
 
 
@@ -428,22 +448,6 @@ void displayPreorder(BST *t, BSTNODE *n, FILE *fp) {
     if (n->right != NULL) fprintf(fp, " [");
     t->displayPreorder(t, n->right, fp);
     if (n->right != NULL) fprintf(fp, "]");
-}
-
-
-void displayLevelOrder(BST *t, FILE *fp) {
-    assert(t != 0);
-    if (t->root == NULL) return;
-    QUEUE *q = newQUEUE(NULL, NULL);
-    BSTNODE *n;
-    enqueue(q, t->root);
-    while (sizeQUEUE(q) != 0) {
-        n = dequeue(q);
-        if (n->left != NULL) enqueue(q, n->left);
-        if (n->right != NULL) enqueue(q, n->right);
-        t->display(getBSTNODEvalue(n), fp);
-        fprintf(fp, " ");
-    }
 }
 
 
