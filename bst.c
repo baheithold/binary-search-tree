@@ -12,6 +12,10 @@
 #include "queue.h"
 
 
+// BSTNODE private method prototypes
+static int isLeaf(BSTNODE *n);
+
+
 /*
  *  Type:   BSTNODE
  *  Description: This is the node structure to be used in the BST class.
@@ -21,6 +25,7 @@ struct BSTNODE {
     BSTNODE *left;
     BSTNODE *right;
     BSTNODE *parent;
+    int (*isLeaf)(BSTNODE *);
 };
 
 
@@ -37,6 +42,7 @@ BSTNODE *newBSTNODE(void *v) {
     n->left = NULL;
     n->right = NULL;
     n->parent = NULL;
+    n->isLeaf = isLeaf;
     return n;
 }
 
@@ -145,13 +151,24 @@ void freeBSTNODE(BSTNODE *n, void (*freeValue)(void *)) {
 }
 
 
+int isLeaf(BSTNODE *n) {
+    assert(n != 0);
+    if (getBSTNODEleft(n) != NULL || getBSTNODEright(n) != NULL) {
+        return 0;
+    }
+    return 1;
+}
+
+
 // BST private method prototypes
+static void swapper(BSTNODE *x, BSTNODE *y);
 static int getMinDepth(BST *t);
 static int getMaxDepth(BST *t, BSTNODE *n);
 static BSTNODE *getTreeMinimum(BST *t, BSTNODE *n);
 static BSTNODE *getTreeMaximum(BST *t, BSTNODE *n);
 static BSTNODE *getSuccessor(BST *t, BSTNODE *n);
 static BSTNODE *getPredecessor(BST *t, BSTNODE *n);
+static int compareNodes(BST *t, BSTNODE *x, BSTNODE *y);
 static void displayPreorder(BST *t, BSTNODE *n, FILE *fp);
 static void freeTree(BST *t, BSTNODE *n);
 
@@ -177,6 +194,7 @@ struct BST {
     BSTNODE *(*getTreeMaximum)(BST *, BSTNODE *);
     BSTNODE *(*getSuccessor)(BST *, BSTNODE *);
     BSTNODE *(*getPredecessor)(BST *, BSTNODE *);
+    int (*compareNodes)(BST *, BSTNODE *, BSTNODE *);
     void (*displayPreorder)(BST *, BSTNODE *, FILE *);
     void (*freeTree)(BST *, BSTNODE *);
 };
@@ -199,7 +217,8 @@ BST *newBST(void (*d)(void *, FILE *),
     t->size = 0;
     t->display = d;
     t->compare = c;
-    t->swap = s;
+    if (s != NULL) t->swap = s;
+    else t->swap = swapper;
     t->free = f;
     t->getMinDepth = getMinDepth;
     t->getMaxDepth = getMaxDepth;
@@ -207,6 +226,7 @@ BST *newBST(void (*d)(void *, FILE *),
     t->getTreeMaximum = getTreeMaximum;
     t->getSuccessor = getSuccessor;
     t->getPredecessor = getPredecessor;
+    t->compareNodes = compareNodes;
     t->displayPreorder = displayPreorder;
     t->freeTree = freeTree;
     return t;
@@ -317,9 +337,22 @@ BSTNODE *findBST(BST *t, void *value) {
  *  Description:
  */
 BSTNODE *swapToLeafBST(BST *t, BSTNODE *n) {
-    // TODO: implement me!
-    printf("swapToLeafBST: IMPLEMENT ME!\n");
-    return n;
+    // TODO: Am I correct?
+    assert(t != 0);
+    assert(n != 0);
+    BSTNODE *leaf = n;
+    while (!n->isLeaf(n)) {
+        if (getBSTNODEleft(n) != NULL) {
+            leaf = t->getSuccessor(t, n);
+            t->swap(n, leaf);
+        }
+        else {
+            leaf = t->getPredecessor(t, n);
+            t->swap(n, leaf);
+        }
+        n = leaf;
+    }
+    return leaf;
 }
 
 
@@ -433,6 +466,16 @@ void freeBST(BST *t) {
 
 /****************************** Private Methods ******************************/
 
+
+void swapper(BSTNODE *x, BSTNODE *y) {
+    // TODO: Do I work correctly?
+    assert(x != 0 && y != 0);
+    void *tmp = getBSTNODEvalue(x);
+    setBSTNODEvalue(x, getBSTNODEvalue(y));
+    setBSTNODEvalue(y, tmp);
+}
+
+
 int getMinDepth(BST *t) {
     // TODO: Do I work Correctly?
     // TODO: Am I efficient?
@@ -492,14 +535,46 @@ BSTNODE *getTreeMaximum(BST *t, BSTNODE *n) {
 
 
 BSTNODE *getSuccessor(BST *t, BSTNODE *n) {
-    // TODO: implement me!
-    return n;
+    // TODO: Am I correct!
+    assert(t != 0);
+    assert(n != 0);
+    if (getBSTNODEright(n) != NULL) {
+        return getTreeMinimum(t, getBSTNODEright(n));
+    }
+    BSTNODE *y = getBSTNODEparent(n);
+    while (y != NULL && t->compareNodes(t, n, getBSTNODEright(y)) == 0) {
+        n = y;
+        y = getBSTNODEparent(y);
+    }
+    return y;
 }
 
 
 BSTNODE *getPredecessor(BST *t, BSTNODE *n) {
-    // TODO: implement me!
-    return n;
+    // TODO: Am I correct!
+    assert(t != 0);
+    assert(n != 0);
+    if (getBSTNODEleft(n) != NULL) {
+        return getTreeMaximum(t, getBSTNODEleft(n));
+    }
+    BSTNODE *y = getBSTNODEparent(n);
+    while (y != NULL && t->compareNodes(t, n, getBSTNODEleft(y)) == 0) {
+        n = y;
+        y = getBSTNODEparent(y);
+    }
+    return y;
+}
+
+
+int compareNodes(BST *t, BSTNODE *x, BSTNODE *y) {
+    // TODO: Am i correct?
+    assert(t != 0);
+    assert(x != 0);
+    assert(y != 0);
+    if (t->compare == NULL) {
+        return getBSTNODEvalue(x) == getBSTNODEvalue(y);
+    }
+    return t->compare(getBSTNODEvalue(x), getBSTNODEvalue(y));
 }
 
 

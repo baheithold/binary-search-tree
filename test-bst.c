@@ -20,6 +20,9 @@ int main(void) {
     root = insertBST(t, newINTEGER(8));
 
     displayBSTdebug(t, stdout);
+    printf("Swapping...\n");
+    BSTNODE *leaf = swapToLeafBST(t, getBSTroot(t));
+    displayBSTdebug(t, stdout);
 
     freeBST(t);
     return 0;
