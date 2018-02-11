@@ -332,6 +332,19 @@ BSTNODE *findBST(BST *t, void *value) {
 
 
 /*
+ *  Method: deleteBST
+ *  Usage:  BSTNODE *deletedNode = deleteBST(t, valueToDelete);
+ *  Description:
+ */
+BSTNODE *deleteBST(BST *t, void *v) {
+    BSTNODE *n = findBST(t, v);
+    n = swapToLeafBST(t, n);
+    pruneLeafBST(t, n);
+    return n;
+}
+
+
+/*
  *  Method: swapToLeaf
  *  Usage:  BSTNODE *leaf = swapToLeaf(t, node);
  *  Description:
