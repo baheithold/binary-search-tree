@@ -20,10 +20,11 @@ int main(void) {
     root = insertBST(t, newINTEGER(8));
 
     displayBSTdebug(t, stdout);
-    printf("Swapping...\n");
-    BSTNODE *leaf = swapToLeafBST(t, getBSTroot(t));
-    pruneLeafBST(t, leaf);
+    printf("Deleting...\n");
+    INTEGER *x = newINTEGER(7);
+    BSTNODE *leaf = deleteBST(t, x);
     freeBSTNODE(leaf, freeINTEGER);
+    freeINTEGER(x);
     displayBSTdebug(t, stdout);
 
     freeBST(t);
