@@ -168,6 +168,7 @@ int isLeaf(BSTNODE *n) {
 
 // BST private method prototypes
 static void swapper(BSTNODE *x, BSTNODE *y);
+static int isRoot(BST *t, BSTNODE *n);
 static int isLeftChild(BST *t, BSTNODE *n);
 static int isRightChild(BST *t, BSTNODE *n);
 static int getMinDepth(BST *t);
@@ -196,6 +197,7 @@ struct BST {
     void (*free)(void *);
 
     // Private Methods
+    int (*isRoot)(BST *, BSTNODE *);
     int (*isLeftChild)(BST *, BSTNODE *);
     int (*isRightChild)(BST *, BSTNODE *);
     int (*getMinDepth)(BST *);
@@ -230,6 +232,7 @@ BST *newBST(void (*d)(void *, FILE *),
     if (s != NULL) t->swap = s;
     else t->swap = swapper;
     t->free = f;
+    t->isRoot = isRoot;
     t->isLeftChild = isLeftChild;
     t->isRightChild = isRightChild;
     t->getMinDepth = getMinDepth;
@@ -350,6 +353,7 @@ BSTNODE *findBST(BST *t, void *value) {
  */
 BSTNODE *deleteBST(BST *t, void *v) {
     BSTNODE *n = findBST(t, v);
+    if (n == NULL) return NULL;
     n = swapToLeafBST(t, n);
     pruneLeafBST(t, n);
     return n;
@@ -363,11 +367,10 @@ BSTNODE *deleteBST(BST *t, void *v) {
  */
 BSTNODE *swapToLeafBST(BST *t, BSTNODE *n) {
     // TODO: Am I correct?
-    assert(t != 0);
-    assert(n != 0);
+    assert(t != 0 && n != 0);
     BSTNODE *leaf = n;
-    while (!n->isLeaf(n)) {
-        if (getBSTNODEleft(n) != NULL) {
+    while (n->isLeaf(n) != 1) {
+        if (getBSTNODEright(n) != NULL) {
             leaf = t->getSuccessor(t, n);
             t->swap(n, leaf);
         }
@@ -390,13 +393,24 @@ void pruneLeafBST(BST *t, BSTNODE *leaf) {
     // TODO: Am I correct?
     assert(t != 0);
     if (t->isLeftChild(t, leaf)) {
+        if (t->isRoot(t, leaf)) {
+            setBSTroot(t, NULL);
+            t->size--;
+            return;
+        }
         setBSTNODEleft(getBSTNODEparent(leaf), NULL);
         setBSTNODEparent(leaf, NULL);
     }
     else {
+        if (t->isRoot(t, leaf)) {
+            setBSTroot(t, NULL);
+            t->size--;
+            return;
+        }
         setBSTNODEright(getBSTNODEparent(leaf), NULL);
         setBSTNODEparent(leaf, NULL);
     }
+    t->size--;
 }
 
 
@@ -514,6 +528,14 @@ void swapper(BSTNODE *x, BSTNODE *y) {
 }
 
 
+int isRoot(BST *t, BSTNODE *n) {
+    if (t->compare(getBSTNODEvalue(n), getBSTNODEvalue(t->root)) == 0) {
+        return 1;
+    }
+    return 0;
+}
+
+
 /*
  *  Method (private):   isLeftChild
  *  Usage:  int isLeft = isLeftChild(n);
@@ -522,6 +544,7 @@ void swapper(BSTNODE *x, BSTNODE *y) {
  */
 int isLeftChild(BST *t, BSTNODE *n) {
     assert(t != 0 && n != 0);
+    if (t->isRoot(t, n)) return 0;
     BSTNODE *leftChild = getBSTNODEleft(getBSTNODEparent(n));
     if (t->compare(getBSTNODEvalue(n), getBSTNODEvalue(leftChild)) == 0) {
         return 1;
@@ -538,6 +561,7 @@ int isLeftChild(BST *t, BSTNODE *n) {
  */
 int isRightChild(BST *t, BSTNODE *n) {
     assert(t != 0 && n != 0);
+    if (t->isRoot(t, n)) return 0;
     BSTNODE *rightChild = getBSTNODEright(getBSTNODEparent(n));
     if (t->compare(getBSTNODEvalue(n), getBSTNODEvalue(rightChild)) == 0) {
         return 1;
