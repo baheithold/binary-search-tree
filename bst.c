@@ -148,6 +148,10 @@ void freeBSTNODE(BSTNODE *n, void (*freeValue)(void *)) {
 // BST private method prototypes
 static int getMinDepth(BST *t);
 static int getMaxDepth(BST *t, BSTNODE *n);
+static BSTNODE *getTreeMinimum(BST *t, BSTNODE *n);
+static BSTNODE *getTreeMaximum(BST *t, BSTNODE *n);
+static BSTNODE *getSuccessor(BST *t, BSTNODE *n);
+static BSTNODE *getPredecessor(BST *t, BSTNODE *n);
 static void displayPreorder(BST *t, BSTNODE *n, FILE *fp);
 static void freeTree(BST *t, BSTNODE *n);
 
@@ -169,6 +173,10 @@ struct BST {
     // Private Methods
     int (*getMinDepth)(BST *);
     int (*getMaxDepth)(BST *, BSTNODE *);
+    BSTNODE *(*getTreeMinimum)(BST *, BSTNODE *);
+    BSTNODE *(*getTreeMaximum)(BST *, BSTNODE *);
+    BSTNODE *(*getSuccessor)(BST *, BSTNODE *);
+    BSTNODE *(*getPredecessor)(BST *, BSTNODE *);
     void (*displayPreorder)(BST *, BSTNODE *, FILE *);
     void (*freeTree)(BST *, BSTNODE *);
 };
@@ -195,6 +203,10 @@ BST *newBST(void (*d)(void *, FILE *),
     t->free = f;
     t->getMinDepth = getMinDepth;
     t->getMaxDepth = getMaxDepth;
+    t->getTreeMinimum = getTreeMinimum;
+    t->getTreeMaximum = getTreeMaximum;
+    t->getSuccessor = getSuccessor;
+    t->getPredecessor = getPredecessor;
     t->displayPreorder = displayPreorder;
     t->freeTree = freeTree;
     return t;
@@ -241,6 +253,7 @@ void setBSTsize(BST *t, int s) {
  *  Description: This method inserts a new value into a tree.
  */
 BSTNODE *insertBST(BST *t, void *value) {
+    // TODO: should i be recursive?
     assert(t != 0);
     BSTNODE *n = newBSTNODE(value);
     assert(n != 0);
@@ -295,6 +308,29 @@ BSTNODE *findBST(BST *t, void *value) {
         }
     }
     return n;
+}
+
+
+/*
+ *  Method: swapToLeaf
+ *  Usage:  BSTNODE *leaf = swapToLeaf(t, node);
+ *  Description:
+ */
+BSTNODE *swapToLeafBST(BST *t, BSTNODE *n) {
+    // TODO: implement me!
+    printf("swapToLeafBST: IMPLEMENT ME!\n");
+    return n;
+}
+
+
+/*
+ *  Method: pruneLeafBST
+ *  Usage:  pruneLeafBST(t, n);
+ *  Description:
+ */
+void pruneLeafBST(BST *t, BSTNODE *leaf) {
+    // TODO: implement me!
+    printf("pruneLeafBST: IMPLEMENT ME!\n");
 }
 
 
@@ -439,7 +475,37 @@ int getMaxDepth(BST *t, BSTNODE *n) {
 }
 
 
+BSTNODE *getTreeMinimum(BST *t, BSTNODE *n) {
+    while (getBSTNODEleft(n) != NULL) {
+        n = getBSTNODEleft(n);
+    }
+    return n;
+}
+
+
+BSTNODE *getTreeMaximum(BST *t, BSTNODE *n) {
+    while (getBSTNODEright(n) != NULL) {
+        n = getBSTNODEright(n);
+    }
+    return n;
+}
+
+
+BSTNODE *getSuccessor(BST *t, BSTNODE *n) {
+    // TODO: implement me!
+    return n;
+}
+
+
+BSTNODE *getPredecessor(BST *t, BSTNODE *n) {
+    // TODO: implement me!
+    return n;
+}
+
+
 void displayPreorder(BST *t, BSTNODE *n, FILE *fp) {
+    // TODO: Am I correct?
+    // TODO: Am I efficient?
     assert(t != 0);
     if (n == NULL) return;
     t->display(getBSTNODEvalue(n), fp);
