@@ -26,10 +26,10 @@ extern void freeBSTNODE(BSTNODE *n, void (*free)(void *));
 typedef struct BST BST;
 
 extern BST *newBST(
-    void (*)(void *, FILE *),
-    int (*)(void *, void *),
-    void (*)(BSTNODE *, BSTNODE *),
-    void (*)(void *));
+    void (*)(void *, FILE *),       // display
+    int (*)(void *, void *),        // comparator
+    void (*)(BSTNODE *, BSTNODE *), // swapper
+    void (*)(void *));              // free
 extern BSTNODE *getBSTroot(BST *t);
 extern void setBSTroot(BST *t, BSTNODE *replacement);
 extern void setBSTsize(BST *t, int s);
