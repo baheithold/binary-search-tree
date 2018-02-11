@@ -151,6 +151,12 @@ void freeBSTNODE(BSTNODE *n, void (*freeValue)(void *)) {
 }
 
 
+/*
+ *  Method (private): isLeaf
+ *  Usage:  int isNodeLeaf = isLeaf(n);
+ *  Description: This is private method returns true if the node is a leaf node
+ *  and false otherwise.
+ */
 int isLeaf(BSTNODE *n) {
     assert(n != 0);
     if (getBSTNODEleft(n) != NULL || getBSTNODEright(n) != NULL) {
@@ -162,10 +168,12 @@ int isLeaf(BSTNODE *n) {
 
 // BST private method prototypes
 static void swapper(BSTNODE *x, BSTNODE *y);
+static int isLeftChild(BST *t, BSTNODE *n);
+static int isRightChild(BST *t, BSTNODE *n);
 static int getMinDepth(BST *t);
 static int getMaxDepth(BST *t, BSTNODE *n);
-static BSTNODE *getTreeMinimum(BST *t, BSTNODE *n);
-static BSTNODE *getTreeMaximum(BST *t, BSTNODE *n);
+static BSTNODE *getTreeMinimum(BSTNODE *n);
+static BSTNODE *getTreeMaximum(BSTNODE *n);
 static BSTNODE *getSuccessor(BST *t, BSTNODE *n);
 static BSTNODE *getPredecessor(BST *t, BSTNODE *n);
 static int compareNodes(BST *t, BSTNODE *x, BSTNODE *y);
@@ -188,10 +196,12 @@ struct BST {
     void (*free)(void *);
 
     // Private Methods
+    int (*isLeftChild)(BST *, BSTNODE *);
+    int (*isRightChild)(BST *, BSTNODE *);
     int (*getMinDepth)(BST *);
     int (*getMaxDepth)(BST *, BSTNODE *);
-    BSTNODE *(*getTreeMinimum)(BST *, BSTNODE *);
-    BSTNODE *(*getTreeMaximum)(BST *, BSTNODE *);
+    BSTNODE *(*getTreeMinimum)(BSTNODE *);
+    BSTNODE *(*getTreeMaximum)(BSTNODE *);
     BSTNODE *(*getSuccessor)(BST *, BSTNODE *);
     BSTNODE *(*getPredecessor)(BST *, BSTNODE *);
     int (*compareNodes)(BST *, BSTNODE *, BSTNODE *);
@@ -220,6 +230,8 @@ BST *newBST(void (*d)(void *, FILE *),
     if (s != NULL) t->swap = s;
     else t->swap = swapper;
     t->free = f;
+    t->isLeftChild = isLeftChild;
+    t->isRightChild = isRightChild;
     t->getMinDepth = getMinDepth;
     t->getMaxDepth = getMaxDepth;
     t->getTreeMinimum = getTreeMinimum;
@@ -375,8 +387,16 @@ BSTNODE *swapToLeafBST(BST *t, BSTNODE *n) {
  *  Description:
  */
 void pruneLeafBST(BST *t, BSTNODE *leaf) {
-    // TODO: implement me!
-    printf("pruneLeafBST: IMPLEMENT ME!\n");
+    // TODO: Am I correct?
+    assert(t != 0);
+    if (t->isLeftChild(t, leaf)) {
+        setBSTNODEleft(getBSTNODEparent(leaf), NULL);
+        setBSTNODEparent(leaf, NULL);
+    }
+    else {
+        setBSTNODEright(getBSTNODEparent(leaf), NULL);
+        setBSTNODEparent(leaf, NULL);
+    }
 }
 
 
@@ -480,6 +500,11 @@ void freeBST(BST *t) {
 /****************************** Private Methods ******************************/
 
 
+/*
+ *  Method (private):
+ *  Usage:
+ *  Description:
+ */
 void swapper(BSTNODE *x, BSTNODE *y) {
     // TODO: Do I work correctly?
     assert(x != 0 && y != 0);
@@ -489,6 +514,43 @@ void swapper(BSTNODE *x, BSTNODE *y) {
 }
 
 
+/*
+ *  Method (private):   isLeftChild
+ *  Usage:  int isLeft = isLeftChild(n);
+ *  Description: This private method returns true if the node is the left child
+ *  of it's parent node.
+ */
+int isLeftChild(BST *t, BSTNODE *n) {
+    assert(t != 0 && n != 0);
+    BSTNODE *leftChild = getBSTNODEleft(getBSTNODEparent(n));
+    if (t->compare(getBSTNODEvalue(n), getBSTNODEvalue(leftChild)) == 0) {
+        return 1;
+    }
+    return 0;
+}
+
+
+/*
+ *  Method (private):   isRightChild
+ *  Usage:  int isRight = isRightChild(n);
+ *  Description: This private method returns true if the node is the right child
+ *  of it's parent node.
+ */
+int isRightChild(BST *t, BSTNODE *n) {
+    assert(t != 0 && n != 0);
+    BSTNODE *rightChild = getBSTNODEright(getBSTNODEparent(n));
+    if (t->compare(getBSTNODEvalue(n), getBSTNODEvalue(rightChild)) == 0) {
+        return 1;
+    }
+    return 0;
+}
+
+
+/*
+ *  Method (private):
+ *  Usage:
+ *  Description:
+ */
 int getMinDepth(BST *t) {
     // TODO: Do I work Correctly?
     // TODO: Am I efficient?
@@ -519,6 +581,11 @@ int getMinDepth(BST *t) {
 }
 
 
+/*
+ *  Method (private):
+ *  Usage:
+ *  Description:
+ */
 int getMaxDepth(BST *t, BSTNODE *n) {
     // TODO: Do I work Correctly?
     // TODO: Am I efficient?
@@ -531,7 +598,12 @@ int getMaxDepth(BST *t, BSTNODE *n) {
 }
 
 
-BSTNODE *getTreeMinimum(BST *t, BSTNODE *n) {
+/*
+ *  Method (private):
+ *  Usage:
+ *  Description:
+ */
+BSTNODE *getTreeMinimum(BSTNODE *n) {
     while (getBSTNODEleft(n) != NULL) {
         n = getBSTNODEleft(n);
     }
@@ -539,7 +611,12 @@ BSTNODE *getTreeMinimum(BST *t, BSTNODE *n) {
 }
 
 
-BSTNODE *getTreeMaximum(BST *t, BSTNODE *n) {
+/*
+ *  Method (private):
+ *  Usage:
+ *  Description:
+ */
+BSTNODE *getTreeMaximum(BSTNODE *n) {
     while (getBSTNODEright(n) != NULL) {
         n = getBSTNODEright(n);
     }
@@ -547,12 +624,17 @@ BSTNODE *getTreeMaximum(BST *t, BSTNODE *n) {
 }
 
 
+/*
+ *  Method (private):
+ *  Usage:
+ *  Description:
+ */
 BSTNODE *getSuccessor(BST *t, BSTNODE *n) {
     // TODO: Am I correct!
     assert(t != 0);
     assert(n != 0);
     if (getBSTNODEright(n) != NULL) {
-        return getTreeMinimum(t, getBSTNODEright(n));
+        return getTreeMinimum(getBSTNODEright(n));
     }
     BSTNODE *y = getBSTNODEparent(n);
     while (y != NULL && t->compareNodes(t, n, getBSTNODEright(y)) == 0) {
@@ -563,12 +645,17 @@ BSTNODE *getSuccessor(BST *t, BSTNODE *n) {
 }
 
 
+/*
+ *  Method (private):
+ *  Usage:
+ *  Description:
+ */
 BSTNODE *getPredecessor(BST *t, BSTNODE *n) {
     // TODO: Am I correct!
     assert(t != 0);
     assert(n != 0);
     if (getBSTNODEleft(n) != NULL) {
-        return getTreeMaximum(t, getBSTNODEleft(n));
+        return getTreeMaximum(getBSTNODEleft(n));
     }
     BSTNODE *y = getBSTNODEparent(n);
     while (y != NULL && t->compareNodes(t, n, getBSTNODEleft(y)) == 0) {
@@ -579,6 +666,11 @@ BSTNODE *getPredecessor(BST *t, BSTNODE *n) {
 }
 
 
+/*
+ *  Method (private):
+ *  Usage:
+ *  Description:
+ */
 int compareNodes(BST *t, BSTNODE *x, BSTNODE *y) {
     // TODO: Am i correct?
     assert(t != 0);
@@ -591,6 +683,11 @@ int compareNodes(BST *t, BSTNODE *x, BSTNODE *y) {
 }
 
 
+/*
+ *  Method (private):
+ *  Usage:
+ *  Description:
+ */
 void displayPreorder(BST *t, BSTNODE *n, FILE *fp) {
     // TODO: Am I correct?
     // TODO: Am I efficient?
@@ -606,6 +703,11 @@ void displayPreorder(BST *t, BSTNODE *n, FILE *fp) {
 }
 
 
+/*
+ *  Method (private):
+ *  Usage:
+ *  Description:
+ */
 void freeTree(BST *t, BSTNODE *n) {
     if (n == NULL) return;
     t->freeTree(t, n->left);

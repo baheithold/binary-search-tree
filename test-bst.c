@@ -22,6 +22,8 @@ int main(void) {
     displayBSTdebug(t, stdout);
     printf("Swapping...\n");
     BSTNODE *leaf = swapToLeafBST(t, getBSTroot(t));
+    pruneLeafBST(t, leaf);
+    freeBSTNODE(leaf, freeINTEGER);
     displayBSTdebug(t, stdout);
 
     freeBST(t);
