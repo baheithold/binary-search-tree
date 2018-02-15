@@ -177,7 +177,6 @@ static BSTNODE *getTreeMinimum(BSTNODE *n);
 static BSTNODE *getTreeMaximum(BSTNODE *n);
 static BSTNODE *getSuccessor(BST *t, BSTNODE *n);
 static BSTNODE *getPredecessor(BST *t, BSTNODE *n);
-static int compareNodes(BST *t, BSTNODE *x, BSTNODE *y);
 static void displayPreorder(BST *t, BSTNODE *n, FILE *fp);
 static void freeTree(BST *t, BSTNODE *n);
 
@@ -206,7 +205,6 @@ struct BST {
     BSTNODE *(*getTreeMaximum)(BSTNODE *);
     BSTNODE *(*getSuccessor)(BST *, BSTNODE *);
     BSTNODE *(*getPredecessor)(BST *, BSTNODE *);
-    int (*compareNodes)(BST *, BSTNODE *, BSTNODE *);
     void (*displayPreorder)(BST *, BSTNODE *, FILE *);
     void (*freeTree)(BST *, BSTNODE *);
 };
@@ -241,7 +239,6 @@ BST *newBST(void (*d)(void *, FILE *),
     t->getTreeMaximum = getTreeMaximum;
     t->getSuccessor = getSuccessor;
     t->getPredecessor = getPredecessor;
-    t->compareNodes = compareNodes;
     t->displayPreorder = displayPreorder;
     t->freeTree = freeTree;
     return t;
@@ -515,8 +512,8 @@ void freeBST(BST *t) {
 
 
 /*
- *  Method (private):
- *  Usage:
+ *  Method (private):   swapper
+ *  Usage:  t->swapper(x, y);
  *  Description:
  */
 void swapper(BSTNODE *x, BSTNODE *y) {
@@ -528,7 +525,14 @@ void swapper(BSTNODE *x, BSTNODE *y) {
 }
 
 
+/*
+ *  Method (private):   isRoot
+ *  Usage:  int isNodeRoot = t->isRoot(t, node);
+ *  Description:
+ */
 int isRoot(BST *t, BSTNODE *n) {
+    // TODO: Am I correct? Should this method check for the lack of a parent
+    // pointer?
     if (t->compare(getBSTNODEvalue(n), getBSTNODEvalue(t->root)) == 0) {
         return 1;
     }
@@ -571,8 +575,8 @@ int isRightChild(BST *t, BSTNODE *n) {
 
 
 /*
- *  Method (private):
- *  Usage:
+ *  Method (private):   getMinDepth
+ *  Usage:  int minDepth = t->getMinDepth(t, t->root);
  *  Description:
  */
 int getMinDepth(BST *t) {
@@ -606,25 +610,25 @@ int getMinDepth(BST *t) {
 
 
 /*
- *  Method (private):
- *  Usage:
+ *  Method (private):   getMaxDepth
+ *  Usage:  int maxDepth = t->getMaxDepth(t, t->root);
  *  Description:
  */
 int getMaxDepth(BST *t, BSTNODE *n) {
     // TODO: Do I work Correctly?
     // TODO: Am I efficient?
     assert(t != 0);
+    if (t->root == NULL) return -1;
     if (n == NULL) return 0;
     int leftDepth = t->getMaxDepth(t, n->left);
     int rightDepth = t->getMaxDepth(t, n->right);
-    if (leftDepth > rightDepth) return leftDepth + 1;
-    else return rightDepth + 1;
+    return (leftDepth > rightDepth) ? leftDepth + 1 : rightDepth + 1;
 }
 
 
 /*
- *  Method (private):
- *  Usage:
+ *  Method (private):   getTreeMinimum
+ *  Usage:  BSTNODE *minValueNode = getTreeMinimum(n);
  *  Description:
  */
 BSTNODE *getTreeMinimum(BSTNODE *n) {
@@ -636,8 +640,8 @@ BSTNODE *getTreeMinimum(BSTNODE *n) {
 
 
 /*
- *  Method (private):
- *  Usage:
+ *  Method (private):   getTreeMaximum
+ *  Usage:  BSTNODE *maxValueNode = getTreeMaximum(n);
  *  Description:
  */
 BSTNODE *getTreeMaximum(BSTNODE *n) {
@@ -649,8 +653,8 @@ BSTNODE *getTreeMaximum(BSTNODE *n) {
 
 
 /*
- *  Method (private):
- *  Usage:
+ *  Method (private):   getSuccessor
+ *  Usage:  BSTNODE *successor = t->getSuccessor(t, n);
  *  Description:
  */
 BSTNODE *getSuccessor(BST *t, BSTNODE *n) {
@@ -660,18 +664,23 @@ BSTNODE *getSuccessor(BST *t, BSTNODE *n) {
     if (getBSTNODEright(n) != NULL) {
         return getTreeMinimum(getBSTNODEright(n));
     }
-    BSTNODE *y = getBSTNODEparent(n);
-    while (y != NULL && t->compareNodes(t, n, getBSTNODEright(y)) == 0) {
-        n = y;
-        y = getBSTNODEparent(y);
+    if (t->compare != NULL) {
+        BSTNODE *y = getBSTNODEparent(n);
+        while (y != NULL && t->compare(n->value, getBSTNODEvalue(y->right)) == 0) {
+            n = y;
+            y = getBSTNODEparent(y);
+        }
+        return y;
     }
-    return y;
+    else {
+        return getTreeMaximum(getBSTNODEleft(n));
+    }
 }
 
 
 /*
- *  Method (private):
- *  Usage:
+ *  Method (private):   getPredecessor
+ *  Usage:  BSTNODE *pred = t->getPredecessor(t, n);
  *  Description:
  */
 BSTNODE *getPredecessor(BST *t, BSTNODE *n) {
@@ -681,29 +690,17 @@ BSTNODE *getPredecessor(BST *t, BSTNODE *n) {
     if (getBSTNODEleft(n) != NULL) {
         return getTreeMaximum(getBSTNODEleft(n));
     }
-    BSTNODE *y = getBSTNODEparent(n);
-    while (y != NULL && t->compareNodes(t, n, getBSTNODEleft(y)) == 0) {
-        n = y;
-        y = getBSTNODEparent(y);
+    if (t->compare != NULL) {
+        BSTNODE *y = getBSTNODEparent(n);
+        while ( y != NULL && t->compare(n->value, getBSTNODEvalue(y->left)) == 0) {
+            n = y;
+            y = getBSTNODEparent(y);
+        }
+        return y;
     }
-    return y;
-}
-
-
-/*
- *  Method (private):
- *  Usage:
- *  Description:
- */
-int compareNodes(BST *t, BSTNODE *x, BSTNODE *y) {
-    // TODO: Am i correct?
-    assert(t != 0);
-    assert(x != 0);
-    assert(y != 0);
-    if (t->compare == NULL) {
-        return getBSTNODEvalue(x) == getBSTNODEvalue(y);
+    else {
+        return getTreeMinimum(getBSTNODEright(n));
     }
-    return t->compare(getBSTNODEvalue(x), getBSTNODEvalue(y));
 }
 
 

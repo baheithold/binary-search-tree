@@ -2,10 +2,9 @@
 #include <stdlib.h>
 #include "bst.h"
 #include "integer.h"
-#include "queue.h"
 
-extern void srandom(unsigned int);
-extern long int random(void);
+void srandom(unsigned int);
+long int random(void);
 
 int
 main(void)
@@ -15,7 +14,7 @@ main(void)
     BST *p = newBST(displayINTEGER,compareINTEGER,0,freeINTEGER);
     insertBST(p,newINTEGER(3));
     insertBST(p,newINTEGER(2));
-    printf("in-order: ");
+    printf("pre-order: ");
     displayBST(p,stdout);
     printf("\n");
     printf("level: ");
@@ -26,7 +25,7 @@ main(void)
     printf(" present? %s\n",findBST(p,q) == 0? "no" : "yes");
     INTEGER *r = newINTEGER(3);
     freeBSTNODE(deleteBST(p,r),freeINTEGER);
-    printf("in-order: ");
+    printf("pre-order: ");
     displayBST(p,stdout);
     printf("\n");
     printf("level: ");
@@ -36,7 +35,7 @@ main(void)
     printf(" present? %s\n",findBST(p,q) == 0? "no" : "yes");
     setINTEGER(r,2);
     freeBSTNODE(deleteBST(p,r),freeINTEGER);
-    printf("in-order: ");
+    printf("pre-order: ");
     displayBST(p,stdout);
     printf("\n");
     printf("level: ");
@@ -45,6 +44,7 @@ main(void)
     displayINTEGER(q,stdout);
     printf(" present? %s\n",findBST(p,q) == 0? "no" : "yes");
     printf("size: %d\n",sizeBST(p));
+    statisticsBST(p,stdout);
     freeINTEGER(q);
     freeINTEGER(r);
     freeBST(p);
