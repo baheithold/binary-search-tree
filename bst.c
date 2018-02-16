@@ -715,7 +715,7 @@ void displayPreorder(BST *t, BSTNODE *n, FILE *fp) {
     assert(t != 0);
     if (n == NULL) return;
     t->display(getBSTNODEvalue(n), fp);
-    if (n->left != NULL) fprintf(fp, "[");
+    if (n->left != NULL) fprintf(fp, " [");
     t->displayPreorder(t, n->left, fp);
     if (n->left != NULL) fprintf(fp, "]");
     if (n->right != NULL) fprintf(fp, " [");
