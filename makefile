@@ -26,7 +26,7 @@ test:	test-bst
 		@./test-bst
 
 valgrind: test-bst
-		valgrind test-bst
+		valgrind ./test-bst
 
 clean:
 		rm -f vgcore.* $(OBJS) test-bst
