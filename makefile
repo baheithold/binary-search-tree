@@ -110,5 +110,5 @@ valgrind: bst-0-0
 		valgrind ./bst-0-0
 
 clean:
-		rm -f vgcore.* $(OBJS) bst-0-0 bst-0-1 bst-0-2 bst-0-3 bst-0-4 bst-0-5 \
+		rm -f vgcore.* *.o bst-0-0 bst-0-1 bst-0-2 bst-0-3 bst-0-4 bst-0-5 \
 		bst-0-6 bst-0-7 bst-0-8 bst-0-9
