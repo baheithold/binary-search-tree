@@ -143,7 +143,7 @@ void setBSTNODEparent(BSTNODE *n, BSTNODE *replacement) {
  */
 void freeBSTNODE(BSTNODE *n, void (*freeValue)(void *)) {
     // TODO: Do I work correctly?
-    assert(n != 0); // TODO: Should I assert here?
+    assert(n != 0);
     if (freeValue != NULL) {
         freeValue(n->value);
     }
@@ -531,8 +531,7 @@ void swapper(BSTNODE *x, BSTNODE *y) {
  *  Description:
  */
 int isRoot(BST *t, BSTNODE *n) {
-    // TODO: Am I correct? Should this method check for the lack of a parent
-    // pointer?
+    assert(t != 0 && n != 0);
     if (t->compare(getBSTNODEvalue(n), getBSTNODEvalue(t->root)) == 0) {
         return 1;
     }
@@ -550,7 +549,8 @@ int isLeftChild(BST *t, BSTNODE *n) {
     assert(t != 0 && n != 0);
     if (t->isRoot(t, n)) return 0;
     BSTNODE *leftChild = getBSTNODEleft(getBSTNODEparent(n));
-    if (t->compare(getBSTNODEvalue(n), getBSTNODEvalue(leftChild)) == 0) {
+    if (leftChild == NULL) return 0;
+    else if (t->compare(getBSTNODEvalue(n), getBSTNODEvalue(leftChild)) == 0) {
         return 1;
     }
     return 0;
@@ -567,6 +567,7 @@ int isRightChild(BST *t, BSTNODE *n) {
     assert(t != 0 && n != 0);
     if (t->isRoot(t, n)) return 0;
     BSTNODE *rightChild = getBSTNODEright(getBSTNODEparent(n));
+    if (rightChild == NULL) return 0;
     if (t->compare(getBSTNODEvalue(n), getBSTNODEvalue(rightChild)) == 0) {
         return 1;
     }
