@@ -1,9 +1,10 @@
 OBJS = integer.o real.o string.o bst.o queue.o sll.o
 OOPTS = -Wall -Wextra -std=c99 -g -c
 LOPTS = -Wall -Wextra -std=c99 -g
+EXECUTABLES = bst-0-0 bst-0-1 bst-0-2 bst-0-3 bst-0-4 bst-0-5 bst-0-6 bst-0-7 \
+			  bst-0-8 bst-0-9 bst-0-10
 
-all:	bst-0-0 bst-0-1 bst-0-2 bst-0-3 bst-0-4 bst-0-5 bst-0-6 bst-0-7 \
-		bst-0-8 bst-0-9 bst-0-10
+all:	$(EXECUTABLES)	
 
 bst-0-0:	$(OBJS) bst-0-0.o
 		gcc $(LOPTS) $(OBJS) bst-0-0.o -o bst-0-0
@@ -89,8 +90,7 @@ bst-0-9.o:	./Testing/bst-0-9.c bst.h queue.h integer.h real.h string.h
 bst-0-10.o:	./Testing/bst-0-10.c bst.h queue.h integer.h real.h string.h
 		gcc $(OOPTS) ./Testing/bst-0-10.c
 
-test:	bst-0-0	bst-0-1 bst-0-2 bst-0-3 bst-0-4 bst-0-5 bst-0-6 bst-0-7 \
-		bst-0-8 bst-0-9 bst-0-10
+test:	$(EXECUTABLES)
 		@echo Testing bst-0-0...
 		@./bst-0-0 > ./Testing/myresults/bst-0-0.txt
 		@diff ./Testing/expectedresults/bst-0-0.txt ./Testing/myresults/bst-0-0.txt
@@ -125,9 +125,18 @@ test:	bst-0-0	bst-0-1 bst-0-2 bst-0-3 bst-0-4 bst-0-5 bst-0-6 bst-0-7 \
 		@./bst-0-10 > ./Testing/myresults/bst-0-10.txt
 		@diff ./Testing/expectedresults/bst-0-10.txt ./Testing/myresults/bst-0-10.txt
 
-valgrind: bst-0-0
+valgrind:	$(EXECUTABLES)
 		valgrind ./bst-0-0
+		valgrind ./bst-0-1
+		valgrind ./bst-0-2
+		valgrind ./bst-0-3
+		valgrind ./bst-0-4
+		valgrind ./bst-0-5
+		valgrind ./bst-0-6
+		valgrind ./bst-0-7
+		valgrind ./bst-0-8
+		valgrind ./bst-0-9
+		valgrind ./bst-0-10
 
 clean:
-		rm -f ./Testing/myresults/* vgcore.* *.o bst-0-0 bst-0-1 bst-0-2 bst-0-3 bst-0-4 bst-0-5 \
-		bst-0-6 bst-0-7 bst-0-8 bst-0-9
+		rm -f vgcore.* *.o $(EXECUTABLES)
