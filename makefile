@@ -3,7 +3,7 @@ OOPTS = -Wall -Wextra -std=c99 -g -c
 LOPTS = -Wall -Wextra -std=c99 -g
 
 all:	bst-0-0 bst-0-1 bst-0-2 bst-0-3 bst-0-4 bst-0-5 bst-0-6 bst-0-7 \
-		bst-0-8 bst-0-9
+		bst-0-8 bst-0-9 bst-0-10
 
 bst-0-0:	$(OBJS) bst-0-0.o
 		gcc $(LOPTS) $(OBJS) bst-0-0.o -o bst-0-0
@@ -34,6 +34,9 @@ bst-0-8:	$(OBJS) bst-0-8.o
 
 bst-0-9:	$(OBJS) bst-0-9.o
 		gcc $(LOPTS) $(OBJS) bst-0-9.o -o bst-0-9
+
+bst-0-10:	$(OBJS) bst-0-10.o
+		gcc $(LOPTS) $(OBJS) bst-0-10.o -o bst-0-10
 
 integer.o:	integer.c integer.h
 		gcc $(OOPTS) integer.c
@@ -83,32 +86,48 @@ bst-0-8.o:	./Testing/bst-0-8.c bst.h queue.h integer.h real.h string.h
 bst-0-9.o:	./Testing/bst-0-9.c bst.h queue.h integer.h real.h string.h
 		gcc $(OOPTS) ./Testing/bst-0-9.c
 
+bst-0-10.o:	./Testing/bst-0-10.c bst.h queue.h integer.h real.h string.h
+		gcc $(OOPTS) ./Testing/bst-0-10.c
+
 test:	bst-0-0	bst-0-1 bst-0-2 bst-0-3 bst-0-4 bst-0-5 bst-0-6 bst-0-7 \
-		bst-0-8 bst-0-9
+		bst-0-8 bst-0-9 bst-0-10
 		@echo Testing bst-0-0...
-		@./bst-0-0 >> ./Testing/myresults/bst-0-0.txt
+		@./bst-0-0 > ./Testing/myresults/bst-0-0.txt
+		@diff ./Testing/expectedresults/bst-0-0.txt ./Testing/myresults/bst-0-0.txt
 		@echo Testing bst-0-1...
-		@./bst-0-1 >> ./Testing/myresults/bst-0-1.txt
+		@./bst-0-1 > ./Testing/myresults/bst-0-1.txt
+		@diff ./Testing/expectedresults/bst-0-1.txt ./Testing/myresults/bst-0-1.txt
 		@echo Testing bst-0-2...
-		@./bst-0-2 >> ./Testing/myresults/bst-0-2.txt
+		@./bst-0-2 > ./Testing/myresults/bst-0-2.txt
+		@diff ./Testing/expectedresults/bst-0-2.txt ./Testing/myresults/bst-0-2.txt
 		@echo Testing bst-0-3...
-		@./bst-0-3 >> ./Testing/myresults/bst-0-3.txt
+		@./bst-0-3 > ./Testing/myresults/bst-0-3.txt
+		@diff ./Testing/expectedresults/bst-0-3.txt ./Testing/myresults/bst-0-3.txt
 		@echo Testing bst-0-4...
-		@./bst-0-4 >> ./Testing/myresults/bst-0-4.txt
+		@./bst-0-4 > ./Testing/myresults/bst-0-4.txt
+		@diff ./Testing/expectedresults/bst-0-4.txt ./Testing/myresults/bst-0-4.txt
 		@echo Testing bst-0-5...
-		@./bst-0-5 >> ./Testing/myresults/bst-0-5.txt
+		@./bst-0-5 > ./Testing/myresults/bst-0-5.txt
+		@diff ./Testing/expectedresults/bst-0-5.txt ./Testing/myresults/bst-0-5.txt
 		@echo Testing bst-0-6...
-		@./bst-0-6 >> ./Testing/myresults/bst-0-6.txt
+		@./bst-0-6 > ./Testing/myresults/bst-0-6.txt
+		@diff ./Testing/expectedresults/bst-0-6.txt ./Testing/myresults/bst-0-6.txt
 		@echo Testing bst-0-7...
-		@./bst-0-7 >> ./Testing/myresults/bst-0-7.txt
+		@./bst-0-7 > ./Testing/myresults/bst-0-7.txt
+		@diff ./Testing/expectedresults/bst-0-7.txt ./Testing/myresults/bst-0-7.txt
 		@echo Testing bst-0-8...
-		@./bst-0-8 >> ./Testing/myresults/bst-0-8.txt
+		@./bst-0-8 > ./Testing/myresults/bst-0-8.txt
+		@diff ./Testing/expectedresults/bst-0-8.txt ./Testing/myresults/bst-0-8.txt
 		@echo Testing bst-0-9...
-		@./bst-0-9 >> ./Testing/myresults/bst-0-9.txt
+		@./bst-0-9 > ./Testing/myresults/bst-0-9.txt
+		@diff ./Testing/expectedresults/bst-0-9.txt ./Testing/myresults/bst-0-9.txt
+		@echo Testing bst-0-10...
+		@./bst-0-10 > ./Testing/myresults/bst-0-10.txt
+		@diff ./Testing/expectedresults/bst-0-10.txt ./Testing/myresults/bst-0-10.txt
 
 valgrind: bst-0-0
 		valgrind ./bst-0-0
 
 clean:
-		rm -f vgcore.* *.o bst-0-0 bst-0-1 bst-0-2 bst-0-3 bst-0-4 bst-0-5 \
+		rm -f ./Testing/myresults/* vgcore.* *.o bst-0-0 bst-0-1 bst-0-2 bst-0-3 bst-0-4 bst-0-5 \
 		bst-0-6 bst-0-7 bst-0-8 bst-0-9

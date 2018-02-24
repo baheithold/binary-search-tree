@@ -171,7 +171,7 @@ static void swapper(BSTNODE *x, BSTNODE *y);
 static int isRoot(BST *t, BSTNODE *n);
 static int isLeftChild(BST *t, BSTNODE *n);
 static int isRightChild(BST *t, BSTNODE *n);
-static int getMinDepth(BST *t);
+static int getMinDepth(BST *t, BSTNODE *n);
 static int getMaxDepth(BST *t, BSTNODE *n);
 static BSTNODE *getTreeMinimum(BSTNODE *n);
 static BSTNODE *getTreeMaximum(BSTNODE *n);
@@ -199,7 +199,7 @@ struct BST {
     int (*isRoot)(BST *, BSTNODE *);
     int (*isLeftChild)(BST *, BSTNODE *);
     int (*isRightChild)(BST *, BSTNODE *);
-    int (*getMinDepth)(BST *);
+    int (*getMinDepth)(BST *, BSTNODE *);
     int (*getMaxDepth)(BST *, BSTNODE *);
     BSTNODE *(*getTreeMinimum)(BSTNODE *);
     BSTNODE *(*getTreeMaximum)(BSTNODE *);
@@ -439,8 +439,14 @@ int sizeBST(BST *t) {
 void statisticsBST(BST *t, FILE *fp) {
     assert(t != 0);
     fprintf(fp, "Nodes: %d\n", t->size);
-    fprintf(fp, "Minimum depth: %d\n", t->getMinDepth(t));
-    fprintf(fp, "Maximum depth: %d\n", t->getMaxDepth(t, t->root));
+    int minDepth = -1;
+    int maxDepth = -1;
+    if (t->size > 0) {
+        minDepth = t->getMinDepth(t, t->root);
+        maxDepth = t->getMaxDepth(t, t->root);
+    }
+    fprintf(fp, "Minimum depth: %d\n", minDepth);
+    fprintf(fp, "Maximum depth: %d\n", maxDepth);
 }
 
 
@@ -580,33 +586,13 @@ int isRightChild(BST *t, BSTNODE *n) {
  *  Usage:  int minDepth = t->getMinDepth(t, t->root);
  *  Description:
  */
-int getMinDepth(BST *t) {
-    // TODO: Do I work Correctly?
-    // TODO: Am I efficient?
+int getMinDepth(BST *t, BSTNODE *n) {
     assert(t != 0);
-    int depth = 0;
-    int numDequeues = 0;
-    if (t->root == NULL) return -1;
-    QUEUE *q = newQUEUE(NULL, NULL);
-    BSTNODE *n = t->root;
-    enqueue(q, n);
-    while (sizeQUEUE(q) != 0) {
-        n = dequeue(q);
-        numDequeues++;
-        if (n->left != NULL && n->right != NULL) {
-            enqueue(q, n->left);
-            enqueue(q, n->right);
-        }
-        else {
-            while (sizeQUEUE(q) != 0) {
-                n = dequeue(q);
-            }
-            break;
-        }
-        if (numDequeues % 2 != 0) depth++;
-    }
-    freeQUEUE(q);
-    return depth;
+    if (n == NULL) return 0;
+    if (getBSTNODEleft(n) == NULL || getBSTNODEright(n) == NULL) return 0;
+    int leftDepth = t->getMinDepth(t, n->left) + 1;
+    int rightDepth = t->getMinDepth(t, n->right) + 1;
+    return (leftDepth < rightDepth) ? leftDepth : rightDepth;
 }
 
 
@@ -616,11 +602,9 @@ int getMinDepth(BST *t) {
  *  Description:
  */
 int getMaxDepth(BST *t, BSTNODE *n) {
-    // TODO: Do I work Correctly?
-    // TODO: Am I efficient?
     assert(t != 0);
     if (t->root == NULL) return -1;
-    if (n == NULL) return 0;
+    if (n == NULL) return -1;
     int leftDepth = t->getMaxDepth(t, n->left);
     int rightDepth = t->getMaxDepth(t, n->right);
     return (leftDepth > rightDepth) ? leftDepth + 1 : rightDepth + 1;
