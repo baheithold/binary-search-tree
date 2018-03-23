@@ -303,6 +303,7 @@ BSTNODE *insertBST(BST *t, void *value) {
     setBSTNODEparent(n, p);
     if (p == NULL) {
         setBSTroot(t, n);
+        setBSTNODEparent(n, n);
     }
     else if (t->compare(value, getBSTNODEvalue(p)) < 0) {
         // Set the new node to be the left child of p
@@ -732,8 +733,6 @@ BSTNODE *getPredecessor(BST *t, BSTNODE *n) {
  *  Description:
  */
 void displayPreorder(BST *t, BSTNODE *n, FILE *fp) {
-    // TODO: Am I correct?
-    // TODO: Am I efficient?
     assert(t != 0);
     if (n == NULL) return;
     t->display(getBSTNODEvalue(n), fp);
