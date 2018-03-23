@@ -578,10 +578,7 @@ void swapper(BSTNODE *x, BSTNODE *y) {
  */
 int isRoot(BST *t, BSTNODE *n) {
     assert(t != 0 && n != 0);
-    if (t->compare(getBSTNODEvalue(n), getBSTNODEvalue(t->root)) == 0) {
-        return 1;
-    }
-    return 0;
+    return (n == t->root) ? 1 : 0;
 }
 
 
