@@ -564,7 +564,7 @@ void freeBST(BST *t) {
  *  Description:
  */
 void swapper(BSTNODE *x, BSTNODE *y) {
-    // TODO: Do I work correctly?
+    // TODO: Do I work correctly? NO, i THINK
     assert(x != 0 && y != 0);
     void *tmp = getBSTNODEvalue(x);
     setBSTNODEvalue(x, getBSTNODEvalue(y));
